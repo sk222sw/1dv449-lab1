@@ -4,7 +4,8 @@
   "description": "lab 1, 1dv449",
   "main": "app.js",
   "dependencies": {
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "express3-handlebars": "^0.5.2"
   },
   "devDependencies": {},
   "scripts": {

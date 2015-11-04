@@ -1,0 +1,7 @@
+
+// regex instead of repeating app.get for /, home and index
+module.exports = function(app) {
+	app.get('/:var(home|index)?', function(req, res) {
+		res.render('home');
+	});
+}
