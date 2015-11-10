@@ -4,8 +4,10 @@
   "description": "lab 1, 1dv449",
   "main": "app.js",
   "dependencies": {
+    "cheerio": "^0.19.0",
     "express": "^4.13.3",
-    "express3-handlebars": "^0.5.2"
+    "express-handlebars": "^2.0.1",
+    "request": "^2.65.0"
   },
   "devDependencies": {},
   "scripts": {
