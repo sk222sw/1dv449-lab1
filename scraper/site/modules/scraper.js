@@ -6,9 +6,19 @@ var cheerio = require("cheerio");
 var url = "http://localhost:8080";
 
 requestp(url)
-	.then(function(data){
-		console.log(data);
-		exports.scrape = data;
+	.then(function(html){
+
+		var $ = cheerio.load(html);
+		var links = "<li>";
+
+		$('ol').children().each(function() {
+			var data = $(this);
+			console.log(data.children().first().text());	
+		})
+
+
+
+		exports.scrape = links;
 	});
 
 function requestp(url) {
