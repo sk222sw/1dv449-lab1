@@ -35,7 +35,13 @@ function scrapeLink(href) {
 		.then(function(html) {
 			var $ = cheerio.load(html);
 
-			console.log($("body").children().first().first());
+			switch(href) {
+				case "/calendar":
+					console.log("you chose calednar");
+					break;
+				default:
+					console.log("you chose life");
+			}
 
 			// console.log(html);
 
