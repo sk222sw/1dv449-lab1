@@ -9,16 +9,16 @@ requestp(url)
 	.then(function(html){
 
 		var $ = cheerio.load(html);
-		var links = "<li>";
+		var listElements = [];
 
-		$('ol').children().each(function() {
-			var data = $(this);
-			console.log(data.children().first().text());	
+
+		$("a").each(function() {
+			listElements.push($(this).attr("href"));
 		})
 
+		scrapeLink(listElements[2]);
 
-
-		exports.scrape = links;
+		exports.scrape = "nothing to show yet";
 	});
 
 function requestp(url) {
@@ -27,4 +27,17 @@ function requestp(url) {
             resolve(html);
         });
     });
+}
+
+
+function scrapeLink(href) {
+	requestp(url+href)
+		.then(function(html) {
+			var $ = cheerio.load(html);
+
+			console.log($("body").children().first().first());
+
+			// console.log(html);
+
+		})
 }
