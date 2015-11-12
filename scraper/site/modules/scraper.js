@@ -14,12 +14,24 @@ requestp(url)
 
 		$("a").each(function() {
 			listElements.push($(this).attr("href"));
-		})
+		});
 
-		scrapeLink(listElements[2]);
+		scrapeLink(listElements[0]);
 
 		exports.scrape = "nothing to show yet";
 	});
+
+function extractElements(html, element, attribute) {
+	var elements = [];
+	
+	var $ = cheerio.load(html);
+
+	$(element).each(function() {
+		elements.push($(this).attr(attribute));
+	});
+
+	console.log(elements);
+}
 
 function requestp(url) {
     return new promise(function (resolve, reject) {
@@ -34,16 +46,25 @@ function scrapeLink(href) {
 	requestp(url+href)
 		.then(function(html) {
 			var $ = cheerio.load(html);
-
+			
 			switch(href) {
 				case "/calendar":
-					console.log("you chose calednar");
+					scrapeCalendar(html);
+					break;
+				case "/cinema":
+					console.log("you chose cinema");
+					break;
+				case "/dinner":
+					console.log("you chose dinner");
 					break;
 				default:
 					console.log("you chose life");
 			}
 
-			// console.log(html);
 
-		})
+		});
+}
+
+function scrapeCalendar(html) {
+	extractElements(html, "a", "href");
 }
