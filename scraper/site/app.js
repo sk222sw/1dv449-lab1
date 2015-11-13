@@ -11,4 +11,4 @@ var port = app.get('port');
 
 app.listen(port, function() {
 	console.log('Started on localhost: ' + port);
-})
+});
