@@ -4,7 +4,8 @@ var cheerio = require("cheerio");
 
 var getHtml = require("./getHtml");
 
-var url = "http://localhost:8080";
+var url = "https://weekend-booking-sk222sw.c9users.io/";
+var persons = [];
 
 /////////////
 // scraper starts here atm
@@ -19,7 +20,7 @@ requestp(url)
 		});
 
 		scrapeLink(listElements[0]);
-
+		
 		exports.scrape = "nothing to show yet";
 });
 
@@ -31,7 +32,10 @@ requestp(url)
 function requestp(url) {
     return new promise(function (resolve, reject) {
         request(url, function (err, res, html) {
-            resolve(html);
+        	if (err) {
+        		throw err;
+        	}
+        	else resolve(html);
         });
     });
 }
@@ -39,15 +43,14 @@ function requestp(url) {
 /////////////
 // scrape a link with href route
 function scrapeLink(href) {
-
+	href = href.substr(1);
 	var link = url + href;
-
 	requestp(link)
 		.then(function(html) {
 			var $ = cheerio.load(html);
 
 			switch(href) {
-				case "/calendar":
+				case "calendar":
 					scrapeCalendar(html, link);
 					break;
 				case "/cinema":
@@ -66,46 +69,44 @@ function scrapeLink(href) {
 
 function scrapeCalendar(html, link) {
 	var personLinks = getHtml.getElements(html, "a", "href");
-	var persons = [];
+	// var persons = [];
+	var person;
 
-	var pr = new promise(function (resolve, reject){
-		for (var i = 0; i < personLinks.length; i++) {
-			requestp(link + "/" + personLinks[i])
-				persons.push(scrapePerson(html));
-				console.log(personLinks[i]);
-				resolve(scrapePerson(html));
-		}
-	});
-
-	pr.then(function(){
-		console.log(persons);
-	})
-
-
-
+	for (var i = 0; i < personLinks.length; i++) {
+		requestp(link + "/" + personLinks[i])
+			.then(function(html) {
+				person = scrapePerson(html);
+				persons.push(person);
+				console.log(person);
+			});
+	}
 }
 
 function scrapePerson(html) {
 	var days = [];
 	var ok = [];
-
 	var name = getHtml.getElementsText(getHtml.getElements(html, "h2", false));
 	days = getHtml.getElementsText(getHtml.getElements(html, "thead tr th", false));
 	ok = getHtml.getElementsText(getHtml.getElements(html, "tbody tr td", false));
 
 	var person = {name: name, days: days, ok: ok};
-
 	return person;
 }
 
-function getOkDays(days, ok) {
 
-	var okDays = [];
-	for (var i = 0; i < days.length; i++) {
-		if(ok[i].toLowerCase().trim() === "ok"){
-			okDays[i] = true;
-		} else {
-			okDays[i] = false;
-		}
-	}
-}
+
+
+
+
+
+
+// function getOkDays(days, ok) {
+// 	var okDays = [];
+// 	for (var i = 0; i < days.length; i++) {
+// 		if(ok[i].toLowerCase().trim() === "ok"){
+// 			okDays[i] = true;
+// 		} else {
+// 			okDays[i] = false;
+// 		}
+// 	}
+// }
