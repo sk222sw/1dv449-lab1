@@ -20,10 +20,8 @@ requestp(url)
 		});
 
 		scrapeLink(listElements[0]);
-		
-		exports.scrape = "nothing to show yet";
-});
-
+	}).then(function() {
+	});
 
 
 //////////////
@@ -47,23 +45,24 @@ function scrapeLink(href) {
 	var link = url + href;
 	requestp(link)
 		.then(function(html) {
-			var $ = cheerio.load(html);
+			// var $ = cheerio.load(html);
 
 			switch(href) {
 				case "calendar":
 					scrapeCalendar(html, link);
+					console.log("gotta");
 					break;
 				case "/cinema":
-					console.log("you chose cinema");
 					break;
 				case "/dinner":
-					console.log("you chose dinner");
 					break;
 				default:
-					console.log("you chose life");
 			}
 
 
+		})
+		.then(function(){
+			exports.scrape = persons;
 		});
 }
 
@@ -77,36 +76,19 @@ function scrapeCalendar(html, link) {
 			.then(function(html) {
 				person = scrapePerson(html);
 				persons.push(person);
-				console.log(person);
 			});
 	}
 }
 
 function scrapePerson(html) {
-	var days = [];
-	var ok = [];
 	var name = getHtml.getElementsText(getHtml.getElements(html, "h2", false));
-	days = getHtml.getElementsText(getHtml.getElements(html, "thead tr th", false));
-	ok = getHtml.getElementsText(getHtml.getElements(html, "tbody tr td", false));
+	var days = getHtml.getElementsText(getHtml.getElements(html, "thead tr th", false));
+	var ok = getHtml.getElementsText(getHtml.getElements(html, "tbody tr td", false));
 
 	var person = {name: name, days: days, ok: ok};
 	return person;
 }
 
-
-
-
-
-
-
-
-// function getOkDays(days, ok) {
-// 	var okDays = [];
-// 	for (var i = 0; i < days.length; i++) {
-// 		if(ok[i].toLowerCase().trim() === "ok"){
-// 			okDays[i] = true;
-// 		} else {
-// 			okDays[i] = false;
-// 		}
-// 	}
-// }
+function getOkDays() {
+	// exports.scrape = persons;
+}
