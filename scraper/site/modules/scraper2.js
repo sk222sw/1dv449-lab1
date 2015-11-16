@@ -15,20 +15,41 @@ requestHtmlFromUrl(url)
 .then(scrapeForPersonUrls)
 .then(scrapePersons)
 
+.catch(function(err) {
+	console.log(err);
+})
+
+
+// todo: remove hard coded "3"
+// todo: put this function on a diet
 function scrapePersons(links) {
-	for(var i = 0; i < links.length; i++){
-		requestHtmlFromUrl(url+links[i])
-		.then(function() {
-				
-		})
-	}
+	var allOks = [];
+	new Promise(function (resolve, reject) {
+		for (var i = 0; i <= links.length - 1; i++) {
+			requestHtmlFromUrl(url + "/" + links[i])
+			.then(setCheerio)
+			.then(getPersonOks)
+			.then(function (oks) {
+				// console.log(oks);
+			})
+		}
+	})
+}
+
+function getPersonOks($){
+	var personOks = [];
+	$("tbody tr td").each(function(){
+		var thisOk = $(this).text().toLowerCase();
+		personOks.push(thisOk);
+		console.log(thisOk);
+	});
 }
 
 function scrapeForPersonUrls(html) {
 	var links = [];
 	$("a").each(function() {
 		links.push($(this).attr("href"));
-	})
+	});
 	return links;
 }
 
