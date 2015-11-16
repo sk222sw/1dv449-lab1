@@ -1,6 +1,7 @@
 var promise = require('promise');
 var request = require("request");
 var cheerio = require("cheerio");
+var Promise = require('bluebird');
 
 var getHtml = require("./getHtml");
 
@@ -18,10 +19,9 @@ requestp(url)
 		$("a").each(function() {
 			listElements.push($(this).attr("href"));
 		});
-
-		scrapeLink(listElements[0]);
-	}).then(function() {
-	});
+		return html;
+		// scrapeLink(listElements[0]);
+});
 
 
 //////////////
@@ -61,9 +61,6 @@ function scrapeLink(href) {
 
 
 		})
-		.then(function(){
-			exports.scrape = persons;
-		});
 }
 
 function scrapeCalendar(html, link) {
