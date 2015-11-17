@@ -14,7 +14,8 @@ requestHtmlFromUrl(url)
 .then(setCheerio)
 .then(scrapeForPersonUrls)
 .then(scrapeAllPersons)
-.then(function() {console.log("days")})
+.then(function(d) {console.log(d)})
+
 .catch(function(err) {
 	console.log(err);
 })
@@ -30,33 +31,35 @@ function scrapeAllPersons(links) {
 		promises.push(requestHtmlFromUrl(url + "/calendar/" + links[i]));
 	}
 
-	Promise(function(resolve, reject) {
-			console.log("inte här");
-		Promise.map(promises, function(element) {
-			var $ = setCheerio(element);
-			personOks = [];
-			$("tbody tr td").each(function() {
-				personOks.push($(this).text().toLowerCase().trim());
-			});
-			allPersonsOks.push(personOks);
-		})
-		.then(function compareAnswers() {
-			var person0 = allPersonsOks[0];
-			var person1 = allPersonsOks[1];
-			var person2 = allPersonsOks[2];
+	return Promise.map(promises, function(element) {
+		var $ = setCheerio(element);
+		personOks = [];
+		$("tbody tr td").each(function() {
+			personOks.push($(this).text().toLowerCase().trim());
+		});
+		allPersonsOks.push(personOks);
+	})
+	.then(function compareAnswers() {
+		var person0 = allPersonsOks[0];
+		var person1 = allPersonsOks[1];
+		var person2 = allPersonsOks[2];
 
-			if (person0[0] === person1[0] && person0[0] === person2[0]) {
-				days.friday = true;
-			}
-			if (person0[1] === person1[1] && person0[1] === person2[1]) {
-				days.saturday = true;
-			}
-			if (person0[2] === person1[2] && person0[2] === person2[2]) {
-				days.sunday = true;
-			}
-		})
+		if (person0[0] === person1[0] && person0[0] === person2[0]) {
+			days.friday = true;
+		}
+		if (person0[1] === person1[1] && person0[1] === person2[1]) {
+			days.saturday = true;
+		}
+		if (person0[2] === person1[2] && person0[2] === person2[2]) {
+			days.sunday = true;
+		}
+	})
+	.then(function(){
+		return days;
 	})
 }
+
+
 
 function scrapeForPersonUrls(html) {
 	var links = [];
