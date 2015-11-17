@@ -13,36 +13,49 @@ requestHtmlFromUrl(url)
 .then(scrapeCalendar)
 .then(setCheerio)
 .then(scrapeForPersonUrls)
-.then(scrapePersons)
-
+.then(scrapeAllPersons)
+.then(function() {console.log("days")})
 .catch(function(err) {
 	console.log(err);
 })
 
 
-// todo: remove hard coded "3"
-// todo: put this function on a diet
-function scrapePersons(links) {
-	var allOks = [];
-	new Promise(function (resolve, reject) {
-		for (var i = 0; i <= links.length - 1; i++) {
-			requestHtmlFromUrl(url + "/" + links[i])
-			.then(setCheerio)
-			.then(getPersonOks)
-			.then(function (oks) {
-				// console.log(oks);
-			})
-		}
-	})
-}
-
-function getPersonOks($){
+function scrapeAllPersons(links) {
+	var promises = [];
+	var allPersonsOks = [];
 	var personOks = [];
-	$("tbody tr td").each(function(){
-		var thisOk = $(this).text().toLowerCase();
-		personOks.push(thisOk);
-		console.log(thisOk);
-	});
+	var days = {friday: false, saturday: false, sunday: false};	
+
+	for (var i = 0; i < links.length; i++) {
+		promises.push(requestHtmlFromUrl(url + "/calendar/" + links[i]));
+	}
+
+	Promise(function(resolve, reject) {
+			console.log("inte här");
+		Promise.map(promises, function(element) {
+			var $ = setCheerio(element);
+			personOks = [];
+			$("tbody tr td").each(function() {
+				personOks.push($(this).text().toLowerCase().trim());
+			});
+			allPersonsOks.push(personOks);
+		})
+		.then(function compareAnswers() {
+			var person0 = allPersonsOks[0];
+			var person1 = allPersonsOks[1];
+			var person2 = allPersonsOks[2];
+
+			if (person0[0] === person1[0] && person0[0] === person2[0]) {
+				days.friday = true;
+			}
+			if (person0[1] === person1[1] && person0[1] === person2[1]) {
+				days.saturday = true;
+			}
+			if (person0[2] === person1[2] && person0[2] === person2[2]) {
+				days.sunday = true;
+			}
+		})
+	})
 }
 
 function scrapeForPersonUrls(html) {
