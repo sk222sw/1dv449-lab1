@@ -4,8 +4,8 @@ var express = require('express');
 var app = express();
 
 // read configuration and routes
-require('./modules/routes')(app);
 require('./modules/config')(app);
+require('./modules/routes')(app);
 
 var port = app.get('port');
 

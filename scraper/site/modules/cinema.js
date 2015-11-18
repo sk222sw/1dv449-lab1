@@ -10,23 +10,78 @@ var okDays = [];
 
 cinema.prototype.scrape = function (argDays) {
 	dayValues = argDays;
-	helper.requestHtmlFromUrl(helper.url + "/cinema")
+	return helper.requestHtmlFromUrl(helper.url + "/cinema")
 	.then(helper.setCheerio)
 	.then(cinema.prototype.findDay)
 	.then(cinema.prototype.findMovies)
 	.then(cinema.prototype.doAvailabilityRequests)
+	.then(cinema.prototype.makeHtml)
 };
+
+cinema.prototype.makeHtml = function (statuses) {
+	var parsed = [];
+	var movies = [];
+
+	for (var i = 0; i <= statuses.length; i++) {
+		if (statuses[i] !== undefined) {
+			parsed.push(JSON.parse(statuses[i]));
+		}
+	}
+
+	var movie1 = parsed[0];
+	var movie2 = parsed[1];
+	var movie3 = parsed[2];
+
+	movies.push(movie1);
+	movies.push(movie2);
+	movies.push(movie3);
+
+	var ret = "<ul>";
+	// for (var i = 0; i <= movies.length; i++) {
+	// 	if (movies[i] !== undefined) {
+	// 		for (var j = 0; j <= movies[i].length; j++) {
+	// 			if (movies[i][j] !== undefined) {
+	// 				if (movies[i][j].status == 1) {
+	// 					ret += makeLi(movies[i][j].time, getMovieName(movies[i][j].movie));
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+	ret += "</ul>";
+	return ret;
+}
+
+function getMovieName (id) {
+	switch (id) {
+		case "01": 
+			return "Söderkåkar";
+		case "02": 
+			return "Fabian Bom";
+		case "03": 
+			return "Pensionat Paradiset";
+	}
+}
+
+function makeLi (time, movie) {
+	return "<li>" + movie + ": " + time + "</li>";
+}
 
 cinema.prototype.doAvailabilityRequests = function(movies) {
 	var promises = [];
+	var movieStatus = [];
 
 	for (var i = 1; i < movies.length + 1; i++) {
 		promises.push(helper.requestHtmlFromUrl(helper.url 
 				+ "/cinema/check?day=02&movie=0"+i));
 	}
 
-	Promise.map(promises, function (element) {
-		console.log(element + "\n");
+	return Promise.map(promises, function (element) {
+		movieStatus.push(element);
+	})
+	.then(function () {
+		return movieStatus;
 	})
 
 };
@@ -44,16 +99,6 @@ cinema.prototype.findMovies = function (args) {
 	movies.shift();
 
 	return movies;
-
-	// movies.map(function (movie) {
-	// 	console.log(movie.attr("value"));
-	// });
-
-	// helper.requestHtmlFromUrl(helper.url + "/cinema/check?day=01&movie=02")
-	// .then(function (html) {
-	// 	console.log(html);
-	// })
-
 };
 
 

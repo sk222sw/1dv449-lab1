@@ -1,4 +1,5 @@
 var scraper = require('./../modules/scraper2.js');
+var cinema = require('./../modules/cinema.js');
 
 // regex instead of repeating app.get for /, home and index
 module.exports = function(app) {
@@ -6,9 +7,9 @@ module.exports = function(app) {
 		res.render('home');
 	});
 
-	app.get('/scrape', function(req, res) {
+	app.post('/scrape', function(req, res) {
 		res.render('home', {
-			scrape: scraper2.scrape
+			scraper: scraper.scrape(req.body.url)
 		});
 	});
 
