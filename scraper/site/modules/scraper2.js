@@ -3,26 +3,43 @@ var scrapePerson = require('./scrapePerson');
 var helper = require('./helper');
 var calendar = require('./calendar');
 var cinema = require('./cinema');
+var Promise = require('bluebird');
 
+var scraper = function () {};
+exports.scrape = "tomt";
 
-helper.requestHtmlFromUrl(helper.url)
-.then(helper.setCheerio)
-.then(helper.getHrefs)
-.then(calendar.scrapeCalendar)
-.then(helper.setCheerio)
-.then(calendar.scrapeForPersonUrls)
-.then(calendar.scrapeAllPersons)
+// exports.startScraping = function (url) {
+// 	return new Promise(function (resolve, request) {
+// 		return helper.requestHtmlFromUrl(helper.url);
+// 	})
+// };
 
-.then(cinema.scrape)
-.then(function (stuff) {
-	console.log(stuff);
-})
+exports.startScraping = function (url) {
 
+	return new Promise(function  (resolve, reject) {
+		helper.requestHtmlFromUrl(url)
+		.then(helper.setCheerio)
+		.then(calendar.scrapeCalendar)
+		.then(helper.setCheerio)
+		.then(calendar.scrapeForPersonUrls)
+		.then(calendar.scrapeAllPersons)
+		.then(cinema.scrape)
+		.then(function  (result) {
+			console.log(result);
+			resolve(result);
+		});
+	});
 
-// .catch(function(err) {
-// 	console.log(err);
-// });
+};
 
-exports.scrape = function (t) {
-	return t;
-}
+var scrapeRestaurant = function (argument) {
+	return new Promise(function (resolve, reject) {
+		helper.requestHtmlFromUrl("http://localhost:8080/dinner")
+		.then(function (result) {
+			console.log(result);
+			// resolve(hej)
+		})
+	})
+};
+
+// scrapeDinner();

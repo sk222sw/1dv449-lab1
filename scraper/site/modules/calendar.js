@@ -5,8 +5,10 @@ var Promise = require('bluebird');
 var calendar = function () {};
 
 calendar.prototype.scrapeCalendar = function (hrefs) {
-	var calendarIndex = hrefs.indexOf("/calendar");
-	return helper.requestHtmlFromUrl(helper.url + hrefs[calendarIndex]);
+	// console.log(hrefs);
+	// var calendarIndex = hrefs.indexOf("/calendar");
+	console.log(helper.url)
+	return helper.requestHtmlFromUrl(helper.url + "/calendar");
 };
 
 

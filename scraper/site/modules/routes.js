@@ -1,15 +1,34 @@
 var scraper = require('./../modules/scraper2.js');
-var cinema = require('./../modules/cinema.js');
+var helper = require('./../modules/helper.js');
 
-// regex instead of repeating app.get for /, home and index
 module.exports = function(app) {
 	app.get('/:var(home|index)?', function(req, res) {
 		res.render('home');
 	});
 
-	app.post('/scrape', function(req, res) {
+	app.post('/scrape', function (req, res) {
+		var url = req.body.url;
+
+		if (url.slice(-1) === "/") {
+			console.log("IS /");
+			url = url.slice(0, -1);
+		}
+
+		helper.url = url;
+		scraper.startScraping(url)
+		.then(function (htmlString) {
+			res.render('home', {
+				scrape: htmlString
+			});
+		});
+	});
+
+	app.get('/result', function (req, res) {
+
+		// scraper.scrapeRestaurant();
+
 		res.render('home', {
-			scraper: scraper.scrape(req.body.url)
+			scrape: "HEJ"
 		});
 	});
 

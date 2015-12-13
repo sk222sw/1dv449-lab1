@@ -37,17 +37,17 @@ cinema.prototype.makeHtml = function (statuses) {
 	movies.push(movie3);
 
 	var ret = "<ul>";
-	// for (var i = 0; i <= movies.length; i++) {
-	// 	if (movies[i] !== undefined) {
-	// 		for (var j = 0; j <= movies[i].length; j++) {
-	// 			if (movies[i][j] !== undefined) {
-	// 				if (movies[i][j].status == 1) {
-	// 					ret += makeLi(movies[i][j].time, getMovieName(movies[i][j].movie));
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
+	for (var i = 0; i <= movies.length; i++) {
+		if (movies[i] !== undefined) {
+			for (var j = 0; j <= movies[i].length; j++) {
+				if (movies[i][j] !== undefined) {
+					if (movies[i][j].status == 1) {
+						ret += makeLi(movies[i][j].time, getMovieName(movies[i][j].movie));
+					}
+				}
+			}
+		}
+	}
 
 	ret += "</ul>";
 	return ret;
@@ -64,8 +64,19 @@ function getMovieName (id) {
 	}
 }
 
+function getMovieId (name) {
+	switch (name) {
+		case "Söderkåkar": 
+			return 1;
+		case "Fabian Bom": 
+			return 2;
+		case "Pensionat Paradiset": 
+			return 3;
+	}	
+}
+
 function makeLi (time, movie) {
-	return "<li>" + movie + ": " + time + "</li>";
+	return "<li>" + movie + ": " + time + "<a href='/result?movie=" + getMovieId(movie) + "&time=" + time.slice(0, 2) + "'>" + " Boka" + "</a>" + "</li>";
 }
 
 cinema.prototype.doAvailabilityRequests = function(movies) {

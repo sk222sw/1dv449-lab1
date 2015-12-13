@@ -5,9 +5,11 @@ var request = require('request');
 
 var helper = function () {};
 
-helper.prototype.url = "http://localhost:8080";
+helper.prototype.url = "";
+
 
 helper.prototype.requestHtmlFromUrl = function(url) {
+	helper.url = url;
 	return new Promise(function(resolve, reject) {
 		request(url, function(err, res, html) {
 			if (err) { reject(err); }
