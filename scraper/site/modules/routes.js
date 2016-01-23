@@ -10,26 +10,34 @@ module.exports = function(app) {
 		var url = req.body.url;
 
 		if (url.slice(-1) === "/") {
-			console.log("IS /");
 			url = url.slice(0, -1);
 		}
 
+		res.cookie("url", url);
+
 		helper.url = url;
+		
 		scraper.startScraping(url)
 		.then(function (htmlString) {
 			res.render('home', {
+				serverUrl: url,
 				scrape: htmlString
 			});
 		});
 	});
 
 	app.get('/result', function (req, res) {
+		var url = req.cookies.url;
+		var movie = req.query.movie;
+		var time = req.query.time;
 
-		// scraper.scrapeRestaurant();
+		scraper.scrapeRestaurant(url)
+		.then(function (result) {
+			res.render('home', {
+				scrape: result
+			});
+		})
 
-		res.render('home', {
-			scrape: "HEJ"
-		});
 	});
 
 	app.use(function(req, res) {

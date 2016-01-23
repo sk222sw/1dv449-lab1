@@ -75,8 +75,11 @@ function getMovieId (name) {
 	}	
 }
 
-function makeLi (time, movie) {
-	return "<li>" + movie + ": " + time + "<a href='/result?movie=" + getMovieId(movie) + "&time=" + time.slice(0, 2) + "'>" + " Boka" + "</a>" + "</li>";
+
+function makeLi (time, movie, day) {
+
+
+	return "<li>" + movie + ": " + time + "<a href='/result?movie=" + getMovieId(movie) + "&day=" + day + "&time=" + time.slice(0, 2) + "'>" + " Boka" + "</a>" + "</li>";
 }
 
 cinema.prototype.doAvailabilityRequests = function(movies) {
@@ -101,6 +104,8 @@ cinema.prototype.findMovies = function (args) {
 	var days = args[0];
 	var $ = args[1];
 	var movies = [];
+
+	console.log(days[0].value);
 
 	$("#movie option").each(function () {
 		movies.push($(this));
@@ -131,6 +136,7 @@ cinema.prototype.findDay = function ($) {
 			}
 		});
 	});
+	console.log(validDays.length)
 	return [validDays, $];
 
 };

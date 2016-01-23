@@ -31,4 +31,8 @@ helper.prototype.getHrefs = function($){
 	return hrefs;
 };
 
+helper.prototype.getDomUrl = function (argument) {
+	
+}
+
 module.exports = new helper();

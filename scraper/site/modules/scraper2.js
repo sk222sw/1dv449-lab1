@@ -4,6 +4,7 @@ var helper = require('./helper');
 var calendar = require('./calendar');
 var cinema = require('./cinema');
 var Promise = require('bluebird');
+var dinner = require('./dinner');
 
 var scraper = function () {};
 exports.scrape = "tomt";
@@ -25,19 +26,20 @@ exports.startScraping = function (url) {
 		.then(calendar.scrapeAllPersons)
 		.then(cinema.scrape)
 		.then(function  (result) {
-			console.log(result);
+			// console.log(result);
 			resolve(result);
 		});
 	});
 
 };
 
-var scrapeRestaurant = function (argument) {
+exports.scrapeRestaurant = function (url) {
 	return new Promise(function (resolve, reject) {
-		helper.requestHtmlFromUrl("http://localhost:8080/dinner")
+		helper.requestHtmlFromUrl(url + "/dinner")
+		.then(helper.setCheerio)
+		.then(dinner.scrapeTimes)
 		.then(function (result) {
-			console.log(result);
-			// resolve(hej)
+			resolve(result)
 		})
 	})
 };
