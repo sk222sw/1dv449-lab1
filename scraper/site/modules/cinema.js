@@ -35,14 +35,17 @@ cinema.prototype.makeHtml = function (statuses) {
 	movies.push(movie1);
 	movies.push(movie2);
 	movies.push(movie3);
-
 	var ret = "<ul>";
+	console.log("days:", okDays.length)
+	for (var dd = 0; dd < okDays.length; dd++) {
+		okDays[dd];
+	}
 	for (var i = 0; i <= movies.length; i++) {
 		if (movies[i] !== undefined) {
 			for (var j = 0; j <= movies[i].length; j++) {
 				if (movies[i][j] !== undefined) {
 					if (movies[i][j].status == 1) {
-						ret += makeLi(movies[i][j].time, getMovieName(movies[i][j].movie));
+						ret += makeLi(movies[i][j].time, getMovieName(movies[i][j].movie), 1);
 					}
 				}
 			}
@@ -78,7 +81,6 @@ function getMovieId (name) {
 
 function makeLi (time, movie, day) {
 
-
 	return "<li>" + movie + ": " + time + "<a href='/result?movie=" + getMovieId(movie) + "&day=" + day + "&time=" + time.slice(0, 2) + "'>" + " Boka" + "</a>" + "</li>";
 }
 
@@ -100,12 +102,11 @@ cinema.prototype.doAvailabilityRequests = function(movies) {
 
 };
 
+// args = validdays, cheerio
 cinema.prototype.findMovies = function (args) {
 	var days = args[0];
 	var $ = args[1];
 	var movies = [];
-
-	console.log(days[0].value);
 
 	$("#movie option").each(function () {
 		movies.push($(this));
@@ -113,7 +114,6 @@ cinema.prototype.findMovies = function (args) {
 
 	// remove the first option, whcih isnt a movie
 	movies.shift();
-
 	return movies;
 };
 
@@ -132,11 +132,11 @@ cinema.prototype.findDay = function ($) {
 		$("#day option").each(function () {
 			var thisDay = translateDay($(this).text().toLowerCase());
 			if(thisDay === value.toLowerCase()) {
-				validDays.push($(this));
+				// validDays.push($(this));
+				validDays.push(thisDay);
 			}
 		});
 	});
-	console.log(validDays.length)
 	return [validDays, $];
 
 };

@@ -7,7 +7,6 @@ var calendar = function () {};
 calendar.prototype.scrapeCalendar = function (hrefs) {
 	// console.log(hrefs);
 	// var calendarIndex = hrefs.indexOf("/calendar");
-	console.log(helper.url)
 	return helper.requestHtmlFromUrl(helper.url + "/calendar");
 };
 

@@ -9,6 +9,7 @@ module.exports = function(app) {
 	app.post('/scrape', function (req, res) {
 		var url = req.body.url;
 
+		// remove / from url string to prevent crash
 		if (url.slice(-1) === "/") {
 			url = url.slice(0, -1);
 		}
