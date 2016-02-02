@@ -12,45 +12,57 @@ cinema.prototype.scrape = function (argDays) {
 	dayValues = argDays;
 	return helper.requestHtmlFromUrl(helper.url + "/cinema")
 	.then(helper.setCheerio)
-	.then(cinema.prototype.findDay)
+	.then(cinema.prototype.findPossibleDays)
 	.then(cinema.prototype.findMovies)
 	.then(cinema.prototype.doAvailabilityRequests)
 	.then(cinema.prototype.makeHtml)
 };
 
-cinema.prototype.makeHtml = function (statuses) {
+cinema.prototype.cycleThroughDays = function(movies) {
+	okDays.forEach(function(day) {
+
+	})
+};
+
+cinema.prototype.makeHtml = function (days) {
 	var parsed = [];
 	var movies = [];
 
-	for (var i = 0; i <= statuses.length; i++) {
-		if (statuses[i] !== undefined) {
-			parsed.push(JSON.parse(statuses[i]));
-		}
-	}
-
-	var movie1 = parsed[0];
-	var movie2 = parsed[1];
-	var movie3 = parsed[2];
-
-	movies.push(movie1);
-	movies.push(movie2);
-	movies.push(movie3);
 	var ret = "<ul>";
-	console.log("days:", okDays.length)
-	for (var dd = 0; dd < okDays.length; dd++) {
-		okDays[dd];
-	}
-	for (var i = 0; i <= movies.length; i++) {
-		if (movies[i] !== undefined) {
-			for (var j = 0; j <= movies[i].length; j++) {
-				if (movies[i][j] !== undefined) {
-					if (movies[i][j].status == 1) {
-						ret += makeLi(movies[i][j].time, getMovieName(movies[i][j].movie), 1);
-					}
-				}
-			}
-		}
-	}
+
+	days.forEach(function(day) {
+		day.movies.forEach(function(movie) {
+
+			movie.times.forEach(function(time) {
+				ret += makeLi(time, movie.title, movie.day, movie.movieId);
+			})
+		})
+	})
+
+	// for (var i = 0; i <= statuses.length; i++) {
+	// 	if (statuses[i] !== undefined) {
+	// 		parsed.push(JSON.parse(statuses[i]));
+	// 	}
+	// }
+	// var movie1 = parsed[0];
+	// var movie2 = parsed[1];
+	// var movie3 = parsed[2];
+	// movies.push(movie1);
+	// movies.push(movie2);
+	// movies.push(movie3);
+	// var ret = "<ul>";
+
+	// for (var i = 0; i <= movies.length; i++) {
+	// 	if (movies[i] !== undefined) {
+	// 		for (var j = 0; j <= movies[i].length; j++) {
+	// 			if (movies[i][j] !== undefined) {
+	// 				if (movies[i][j].status == 1) {
+	// 					ret += makeLi(movies[i][j].time, getMovieName(movies[i][j].movie), 2);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	ret += "</ul>";
 	return ret;
@@ -79,25 +91,64 @@ function getMovieId (name) {
 }
 
 
-function makeLi (time, movie, day) {
-
-	return "<li>" + movie + ": " + time + "<a href='/result?movie=" + getMovieId(movie) + "&day=" + day + "&time=" + time.slice(0, 2) + "'>" + " Boka" + "</a>" + "</li>";
+function makeLi (time, movie, day, movieId) {
+	console.log(movie)
+	return "<li>" + movie + ": " + unTranslateDay(day) + " " + time + "<a href='/result?movie=" + movieId + "&day=" + day + "&time=" + time.slice(0, 2) + "'>" + " Boka" + "</a>" + "</li>";
 }
 
-cinema.prototype.doAvailabilityRequests = function(movies) {
+cinema.prototype.doAvailabilityRequests = function(days) {
 	var promises = [];
 	var movieStatus = [];
+	var dayId;
+	var movieId;
+	var counter = 0;
+	var movieObjects = [];
 
-	for (var i = 1; i < movies.length + 1; i++) {
-		promises.push(helper.requestHtmlFromUrl(helper.url 
-				+ "/cinema/check?day=02&movie=0"+i));
-	}
 
-	return Promise.map(promises, function (element) {
+	days.forEach(function(day) {
+		if (day.day === "friday") {
+			dayId = "01";
+		} else if (day.day === "saturday") {
+			dayId = "02";
+		} else if (day.day === "sunday") {
+			dayId = "03";
+		}
+
+		for (var i = 0; i < day.movies.length; i++) {
+			movieId = i+1;
+			day.movies[i].movieId = "0" + movieId;
+			day.movies[i].times = [];
+			day.movies[i].day = day.day;
+
+			var movieRequest = {}
+			movieRequest.promise = helper.requestHtmlFromUrl(helper.url 
+					+ "/cinema/check?day="+dayId+"&movie=0"+movieId);
+			promises.push(movieRequest.promise);
+		}
+	})
+
+
+	return Promise.map(promises, function(element) {
 		movieStatus.push(element);
 	})
-	.then(function () {
-		return movieStatus;
+	.then(function() {
+		movieStatus.forEach(function(ms) {
+			ms = JSON.parse(ms);
+			for (var i = 0; i < ms.length; i++) {
+				days.forEach(function(day) {
+					day.movies.forEach(function(movie) {
+						if (ms[i].status === 1) {
+							if (ms[i].movie === movie.movieId) {
+								movie.times.push(ms[i].time)
+
+							}
+						}
+					})
+				})
+			}
+		})
+
+		return days;
 	})
 
 };
@@ -108,17 +159,24 @@ cinema.prototype.findMovies = function (args) {
 	var $ = args[1];
 	var movies = [];
 
-	$("#movie option").each(function () {
-		movies.push($(this));
-	});
+	days.forEach(function(day) {
+		$("#movie option").each(function () {
+			var movie = {};
+			movie.title = $(this).html();
+			day.movies.push(movie);
+			movies.push($(this).html());
+		});
+		day.movies.shift();
+	})
 
 	// remove the first option, whcih isnt a movie
+
 	movies.shift();
-	return movies;
+	return days;
 };
 
 
-cinema.prototype.findDay = function ($) {
+cinema.prototype.findPossibleDays = function ($) {
 
 	var validDays = [];
 
@@ -133,7 +191,11 @@ cinema.prototype.findDay = function ($) {
 			var thisDay = translateDay($(this).text().toLowerCase());
 			if(thisDay === value.toLowerCase()) {
 				// validDays.push($(this));
-				validDays.push(thisDay);
+				var dayObject = {
+					day: thisDay,
+					movies: []
+				}
+				validDays.push(dayObject);
 			}
 		});
 	});
@@ -154,5 +216,18 @@ function translateDay (day) {
 			return "unknown day";
 	}
 }
+
+function unTranslateDay(day) {
+	switch (day.toLowerCase().trim()) {
+		case "friday":
+			return "fredag";
+		case "saturday":
+			return "lördag";
+		case "sunday":
+			return "söndag";
+		default: 
+			return "unknown day";
+	}	
+};
 
 module.exports = new cinema();
