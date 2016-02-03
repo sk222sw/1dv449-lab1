@@ -17,7 +17,7 @@ module.exports = function(app) {
 		res.cookie("url", url);
 
 		helper.url = url;
-		
+
 		scraper.startScraping(url)
 		.then(function (htmlString) {
 			res.render('home', {

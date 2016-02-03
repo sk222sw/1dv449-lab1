@@ -18,16 +18,7 @@ cinema.prototype.scrape = function (argDays) {
 	.then(cinema.prototype.makeHtml)
 };
 
-cinema.prototype.cycleThroughDays = function(movies) {
-	okDays.forEach(function(day) {
-
-	})
-};
-
 cinema.prototype.makeHtml = function (days) {
-	var parsed = [];
-	var movies = [];
-
 	var ret = "<ul>";
 
 	days.forEach(function(day) {
@@ -38,31 +29,6 @@ cinema.prototype.makeHtml = function (days) {
 			})
 		})
 	})
-
-	// for (var i = 0; i <= statuses.length; i++) {
-	// 	if (statuses[i] !== undefined) {
-	// 		parsed.push(JSON.parse(statuses[i]));
-	// 	}
-	// }
-	// var movie1 = parsed[0];
-	// var movie2 = parsed[1];
-	// var movie3 = parsed[2];
-	// movies.push(movie1);
-	// movies.push(movie2);
-	// movies.push(movie3);
-	// var ret = "<ul>";
-
-	// for (var i = 0; i <= movies.length; i++) {
-	// 	if (movies[i] !== undefined) {
-	// 		for (var j = 0; j <= movies[i].length; j++) {
-	// 			if (movies[i][j] !== undefined) {
-	// 				if (movies[i][j].status == 1) {
-	// 					ret += makeLi(movies[i][j].time, getMovieName(movies[i][j].movie), 2);
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	ret += "</ul>";
 	return ret;
@@ -92,7 +58,6 @@ function getMovieId (name) {
 
 
 function makeLi (time, movie, day, movieId) {
-	console.log(movie)
 	return "<li>" + movie + ": " + unTranslateDay(day) + " " + time + "<a href='/result?movie=" + movieId + "&day=" + day + "&time=" + time.slice(0, 2) + "'>" + " Boka" + "</a>" + "</li>";
 }
 
@@ -101,9 +66,6 @@ cinema.prototype.doAvailabilityRequests = function(days) {
 	var movieStatus = [];
 	var dayId;
 	var movieId;
-	var counter = 0;
-	var movieObjects = [];
-
 
 	days.forEach(function(day) {
 		if (day.day === "friday") {
@@ -140,7 +102,6 @@ cinema.prototype.doAvailabilityRequests = function(days) {
 						if (ms[i].status === 1) {
 							if (ms[i].movie === movie.movieId) {
 								movie.times.push(ms[i].time)
-
 							}
 						}
 					})
@@ -157,35 +118,36 @@ cinema.prototype.doAvailabilityRequests = function(days) {
 cinema.prototype.findMovies = function (args) {
 	var days = args[0];
 	var $ = args[1];
-	var movies = [];
 
 	days.forEach(function(day) {
 		$("#movie option").each(function () {
 			var movie = {};
 			movie.title = $(this).html();
 			day.movies.push(movie);
-			movies.push($(this).html());
+
 		});
+		// remove the first option, which isnt a movie
 		day.movies.shift();
 	})
 
-	// remove the first option, whcih isnt a movie
-
-	movies.shift();
 	return days;
 };
 
 
 cinema.prototype.findPossibleDays = function ($) {
-
 	var validDays = [];
 
+	// ugly hack (?) cause okDays never empties otherwise
+	if (okDays.length) {
+		okDays = [];
+	}
+	
 	for (var key in dayValues) {
 		if (dayValues[key]) {
 			okDays.push(key);
 		}
 	}
-
+	console.log(okDays)
 	okDays.map(function (value) {
 		$("#day option").each(function () {
 			var thisDay = translateDay($(this).text().toLowerCase());
@@ -199,6 +161,7 @@ cinema.prototype.findPossibleDays = function ($) {
 			}
 		});
 	});
+	console.log(validDays);
 	return [validDays, $];
 
 };
