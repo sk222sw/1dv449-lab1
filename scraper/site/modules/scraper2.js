@@ -25,7 +25,6 @@ exports.startScraping = function (url) {
 		.then(calendar.scrapeAllPersons)
 		.then(cinema.scrape)
 		.then(function  (result) {
-			// console.log(result);
 			resolve(result);
 		});
 	});
@@ -45,7 +44,7 @@ exports.scrapeRestaurant = function (url, movie, time, day) {
 					&& shortDayName === dinnerTime.day) {
 					var dinnerMovieMatch = {
 						day: day,
-						movie: movie,
+						movie: getMovieName(movie),
 						movieStart: time,
 						dinnerStart: dinnerTime.startTime
 					}
@@ -72,3 +71,14 @@ function changeDayName(day) {
 			return "unknown day";
 	}
 };
+
+function getMovieName (id) {
+	switch (id) {
+		case "01": 
+			return "Söderkåkar";
+		case "02": 
+			return "Fabian Bom";
+		case "03": 
+			return "Pensionat Paradiset";
+	}
+}

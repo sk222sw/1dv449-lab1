@@ -1,5 +1,6 @@
 var scraper = require('./../modules/scraper2.js');
 var helper = require('./../modules/helper.js');
+var validUrl = require('valid-url');
 
 module.exports = function(app) {
 	app.get('/:var(home|index)?', function(req, res) {
@@ -8,23 +9,29 @@ module.exports = function(app) {
 
 	app.post('/scrape', function (req, res) {
 		var url = req.body.url;
+		if (validUrl.isUri(url)) {
+			// remove / from url string to prevent crash
+			if (url.slice(-1) === "/") {
+				url = url.slice(0, -1);
+			}
 
-		// remove / from url string to prevent crash
-		if (url.slice(-1) === "/") {
-			url = url.slice(0, -1);
+			res.cookie("url", url);
+
+			helper.url = url;
+
+			scraper.startScraping(url)
+			.then(function (htmlString) {
+				res.render('home', {
+					serverUrl: url,
+					scrape: htmlString
+				});
+			});
+		} else {
+			res.render("home", {
+				scrape: "Please enter a valid URL"
+			})
 		}
 
-		res.cookie("url", url);
-
-		helper.url = url;
-
-		scraper.startScraping(url)
-		.then(function (htmlString) {
-			res.render('home', {
-				serverUrl: url,
-				scrape: htmlString
-			});
-		});
 	});
 
 	app.get('/result', function (req, res) {
@@ -35,7 +42,6 @@ module.exports = function(app) {
 		var showDinner = true;
 		scraper.scrapeRestaurant(url, movie, time, day)
 		.then(function (result) {
-			console.log(result)
 			res.render('home', {
 				dinnerMovieMatch: result,
 				showDinner: showDinner
