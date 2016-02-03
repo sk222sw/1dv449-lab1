@@ -1,7 +1,7 @@
 var cheerio = require('cheerio');
 var Promise = require('bluebird');
 var request = require('request');
-
+var url = require('url');
 
 var helper = function () {};
 
@@ -30,9 +30,5 @@ helper.prototype.getHrefs = function($){
 	});
 	return hrefs;
 };
-
-helper.prototype.getDomUrl = function (argument) {
-	
-}
 
 module.exports = new helper();

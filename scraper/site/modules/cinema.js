@@ -147,7 +147,7 @@ cinema.prototype.findPossibleDays = function ($) {
 			okDays.push(key);
 		}
 	}
-	console.log(okDays)
+
 	okDays.map(function (value) {
 		$("#day option").each(function () {
 			var thisDay = translateDay($(this).text().toLowerCase());
@@ -161,7 +161,7 @@ cinema.prototype.findPossibleDays = function ($) {
 			}
 		});
 	});
-	console.log(validDays);
+
 	return [validDays, $];
 
 };

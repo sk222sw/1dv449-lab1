@@ -33,15 +33,43 @@ exports.startScraping = function (url) {
 
 };
 
-exports.scrapeRestaurant = function (url) {
+exports.scrapeRestaurant = function (url, movie, time, day) {
 	return new Promise(function (resolve, reject) {
 		helper.requestHtmlFromUrl(url + "/dinner")
 		.then(helper.setCheerio)
 		.then(dinner.scrapeTimes)
+		.then(function(dinnerTimes) {
+			var dinnerMatches = [];
+			var shortDayName = changeDayName(day);
+			dinnerTimes.forEach(function(dinnerTime) {
+				if (parseInt(dinnerTime.startTime, 10) === parseInt(time, 10)+2
+					&& shortDayName === dinnerTime.day) {
+					var dinnerMovieMatch = {
+						day: day,
+						movie: movie,
+						movieStart: time,
+						dinnerStart: dinnerTime.startTime
+					}
+					dinnerMatches.push(dinnerMovieMatch);
+				}
+			})
+			return dinnerMatches;
+		})
 		.then(function (result) {
 			resolve(result)
 		})
 	})
 };
 
-// scrapeDinner();
+function changeDayName(day) {
+	switch (day.toLowerCase().trim()) {
+		case "friday":
+			return "fre";
+		case "saturday":
+			return "lor";
+		case "sunday":
+			return "son";
+		default: 
+			return "unknown day";
+	}
+};

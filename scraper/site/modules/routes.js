@@ -31,11 +31,14 @@ module.exports = function(app) {
 		var url = req.cookies.url;
 		var movie = req.query.movie;
 		var time = req.query.time;
-
-		scraper.scrapeRestaurant(url)
+		var day = req.query.day;
+		var showDinner = true;
+		scraper.scrapeRestaurant(url, movie, time, day)
 		.then(function (result) {
+			console.log(result)
 			res.render('home', {
-				scrape: result
+				dinnerMovieMatch: result,
+				showDinner: showDinner
 			});
 		})
 

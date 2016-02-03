@@ -11,3 +11,11 @@
 {{/if}}
 
 {{{scrape}}}
+
+{{#if showDinner}}
+	{{#each dinnerMovieMatch}}
+		Ni kan se filmen <i>{{movie}}</i> klockan {{movieStart}}:00 och boka bord på Zekes Bar klockan {{dinnerStart}}:00
+	{{else}}
+		Ledsen, inga lediga bord efter filmen.
+	{{/each}}
+{{/if}}
