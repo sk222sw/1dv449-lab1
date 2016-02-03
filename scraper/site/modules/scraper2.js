@@ -1,4 +1,3 @@
-var getHtml  = require('./getHtml');
 var scrapePerson = require('./scrapePerson');
 var helper = require('./helper');
 var calendar = require('./calendar');
